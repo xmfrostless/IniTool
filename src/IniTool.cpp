@@ -120,6 +120,10 @@ bool IniTool::MatchValue(const std::string& src, std::size_t* pos, std::string* 
 bool IniTool::MatchNameString(const std::string& src, std::size_t* pos, std::string* name) const {
 	std::size_t tmp_pos = *pos;
 	MatchSpace(src, true, &tmp_pos);
+	if (src[tmp_pos] == '\"') {
+		++tmp_pos;
+	}
+	std::size_t end_offset = 0;
 	std::size_t mark_pos = tmp_pos;
 	while (tmp_pos < src.size()) {
 		char ch = src[tmp_pos];
@@ -127,15 +131,15 @@ bool IniTool::MatchNameString(const std::string& src, std::size_t* pos, std::str
 		} else if (ch >= 'A' && ch <= 'Z') {
 		} else if (ch >= '0' && ch <= '9') {
 		} else if (ch == '-' || ch == '.' || ch == '_' || ch == '$' || ch == '@' || ch == ' ') {
+		} else if (ch == '\"') {
+			end_offset = 1;
+			break;
 		} else {
 			break;
 		}
 		++tmp_pos;
 	}
-	if (tmp_pos == mark_pos) {
-		return false;
-	}
-	std::size_t end_pos = tmp_pos;
+	std::size_t end_pos = tmp_pos + end_offset;
 	std::size_t tmp_check_pos = tmp_pos - 1;
 	while (tmp_check_pos >= 0 && src[tmp_check_pos] == ' ') {
 		--tmp_check_pos;
