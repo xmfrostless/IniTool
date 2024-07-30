@@ -101,19 +101,19 @@ bool IniTool::MatchValue(const std::string& src, std::size_t* pos, std::string* 
 		++tmp_pos;
 	}
 	std::size_t end_pos = tmp_pos + end_offset;
-	std::size_t tmp_check_pos = tmp_pos - 1;
-	while (tmp_check_pos >= 0 && src[tmp_check_pos] == ' ') {
-		--tmp_check_pos;
-		--tmp_pos;
+	if (end_offset > 0) {
+		std::size_t tmp_check_pos = tmp_pos - 1;
+		while (tmp_check_pos >= 0 && src[tmp_check_pos] == ' ') {
+			--tmp_check_pos;
+			--tmp_pos;
+		}
 	}
 	if (tmp_pos <= mark_pos) {
-		*pos = end_pos;
 		*value = "";
-		return true;
+	} else {
+		*value = src.substr(mark_pos, tmp_pos - mark_pos);
 	}
-
 	*pos = end_pos;
-	*value = src.substr(mark_pos, tmp_pos - mark_pos);
 	return true;
 }
 
@@ -140,10 +140,12 @@ bool IniTool::MatchNameString(const std::string& src, std::size_t* pos, std::str
 		++tmp_pos;
 	}
 	std::size_t end_pos = tmp_pos + end_offset;
-	std::size_t tmp_check_pos = tmp_pos - 1;
-	while (tmp_check_pos >= 0 && src[tmp_check_pos] == ' ') {
-		--tmp_check_pos;
-		--tmp_pos;
+	if (end_offset > 0) {
+		std::size_t tmp_check_pos = tmp_pos - 1;
+		while (tmp_check_pos >= 0 && src[tmp_check_pos] == ' ') {
+			--tmp_check_pos;
+			--tmp_pos;
+		}
 	}
 	if (tmp_pos <= mark_pos) {
 		return false;
@@ -183,16 +185,16 @@ void IniTool::MatchSpace(const std::string& src, bool checkLineEnd, std::size_t*
 bool IniTool::IsBool(const std::string& src) const {
 	std::size_t size = src.size();
 	if (size == 4) {
-		return	(src[0] == 'T' || src[0] == 't') &&
-				(src[1] == 'R' || src[1] == 'r') &&
-				(src[2] == 'U' || src[2] == 'u') &&
-				(src[3] == 'E' || src[3] == 'e');
+		return (src[0] == 'T' || src[0] == 't') &&
+			   (src[1] == 'R' || src[1] == 'r') &&
+			   (src[2] == 'U' || src[2] == 'u') &&
+			   (src[3] == 'E' || src[3] == 'e');
 	} else if (size == 5) {
-		return	(src[0] == 'F' || src[0] == 'f') &&
-				(src[1] == 'A' || src[1] == 'a') &&
-				(src[2] == 'L' || src[2] == 'l') &&
-				(src[3] == 'S' || src[3] == 's') &&
-				(src[4] == 'E' || src[4] == 'e');
+		return (src[0] == 'F' || src[0] == 'f') &&
+			   (src[1] == 'A' || src[1] == 'a') &&
+			   (src[2] == 'L' || src[2] == 'l') &&
+			   (src[3] == 'S' || src[3] == 's') &&
+			   (src[4] == 'E' || src[4] == 'e');
 	}
 	return false;
 }
