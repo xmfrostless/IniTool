@@ -5,8 +5,15 @@
 
 class IniObject {
 public:
+	IniObject() = default;
+	IniObject(std::unordered_map<std::string, std::unordered_map<std::string, std::string>>&& data);
+	IniObject(const IniObject& ini);
+	IniObject(IniObject&& ini);
+
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& Data();
+	const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& Data() const;
 	std::unordered_map<std::string, std::string>& SectionData(const std::string& section);
+	const std::unordered_map<std::string, std::string>& SectionData(const std::string& section) const;
 
 	bool HasSection(const std::string& section) const;
 	bool HasKey(const std::string& section, const std::string& key) const;
