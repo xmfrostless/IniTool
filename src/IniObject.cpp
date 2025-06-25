@@ -1,4 +1,5 @@
 #include "IniObject.h"
+#include <regex>
 
 IniObject::IniObject(std::unordered_map<std::string, std::unordered_map<std::string, std::string>>&& data)
 	: _dataMap(std::move(data)) {
@@ -10,6 +11,15 @@ IniObject::IniObject(const IniObject& ini)
 
 IniObject::IniObject(IniObject&& ini)
 	: _dataMap(std::move(ini._dataMap)) {
+}
+
+IniObject& IniObject::operator=(const IniObject& ini) {
+	this->_dataMap = ini._dataMap;
+	return *this;
+}
+IniObject& IniObject::operator=(IniObject&& ini) {
+	this->_dataMap = std::move(ini._dataMap);
+	return *this;
 }
 
 std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& IniObject::Data() {
@@ -130,55 +140,10 @@ bool IniObject::GetBool(const std::string& section, const std::string& key, bool
 		auto ite = iteSection->second.find(key);
 		if (ite != iteSection->second.end()) {
 			const auto& value = ite->second;
-			for (std::size_t i = 0; i < value.size(); ++i) {
-				char ch = value[i];
-				if (ch == ' ' || ch == '\t') {
-					continue;
-				}
-				// true
-				if (ch == 'T' || ch == 't') {
-					if (i + 3 >= value.size()) {
-						break;
-					}
-					ch = value[i + 1];
-					if (ch != 'U' && ch != 'u') {
-						break;
-					}
-					ch = value[i + 2];
-					if (ch != 'R' && ch != 'r') {
-						break;
-					}
-					ch = value[i + 3];
-					if (ch != 'E' && ch != 'e') {
-						break;
-					}
-					return true;
-				}
-				// false
-				if (ch == 'F' || ch == 'f') {
-					if (i + 4 >= value.size()) {
-						break;
-					}
-					ch = value[i + 1];
-					if (ch != 'A' && ch != 'a') {
-						break;
-					}
-					ch = value[i + 2];
-					if (ch != 'L' && ch != 'l') {
-						break;
-					}
-					ch = value[i + 3];
-					if (ch != 'S' && ch != 's') {
-						break;
-					}
-					ch = value[i + 4];
-					if (ch != 'E' && ch != 'e') {
-						break;
-					}
-					return false;
-				}
-				break;
+			if (IsBool(value)) {
+				return value.size() > 4;
 			}
+			return defaultValue;
 		}
 	}
 	return defaultValue;
@@ -201,4 +166,25 @@ void IniObject::Set(const std::string& section, const std::string& key, long lon
 }
 void IniObject::Set(const std::string& section, const std::string& key, bool value) {
 	_dataMap[section][key] = value ? "true" : "false";
+}
+
+bool IniObject::IsNumber(const std::string& src) {
+	return std::regex_match(src, std::regex(R"(^[-+]?(?:[0-9]+)?(?:\.[0-9]+)?(?:[eE][-+]?[0-9]+)?$)"));
+}
+
+bool IniObject::IsBool(const std::string& src) {
+	std::size_t size = src.size();
+	if (size == 4) {
+		return (src[0] == 'T' || src[0] == 't') &&
+			(src[1] == 'R' || src[1] == 'r') &&
+			(src[2] == 'U' || src[2] == 'u') &&
+			(src[3] == 'E' || src[3] == 'e');
+	} else if (size == 5) {
+		return (src[0] == 'F' || src[0] == 'f') &&
+			(src[1] == 'A' || src[1] == 'a') &&
+			(src[2] == 'L' || src[2] == 'l') &&
+			(src[3] == 'S' || src[3] == 's') &&
+			(src[4] == 'E' || src[4] == 'e');
+	}
+	return false;
 }

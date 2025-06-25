@@ -10,6 +10,9 @@ public:
 	IniObject(const IniObject& ini);
 	IniObject(IniObject&& ini);
 
+	IniObject& operator=(const IniObject& ini);
+	IniObject& operator=(IniObject&& ini);
+
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& Data();
 	const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& Data() const;
 	std::unordered_map<std::string, std::string>& SectionData(const std::string& section);
@@ -31,6 +34,10 @@ public:
 	void Set(const std::string& section, const std::string& key, int value);
 	void Set(const std::string& section, const std::string& key, long long value);
 	void Set(const std::string& section, const std::string& key, bool value);
+
+public:
+	static bool IsBool(const std::string& src);
+	static bool IsNumber(const std::string& src);
 
 private:
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> _dataMap;
