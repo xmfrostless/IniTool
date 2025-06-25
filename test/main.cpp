@@ -1,4 +1,4 @@
-#include <IniTool.h>
+#include <INI.h>
 #include <iostream>
 #include <fstream>
 #include <string>

@@ -1,4 +1,4 @@
-#include "IniTool.h"
+#include "INI.h"
 #include <vector>
 
 IniObject INI::Parse(const std::string& src) {
